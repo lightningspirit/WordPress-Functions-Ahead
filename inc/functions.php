@@ -82,7 +82,7 @@ function time_diference( $time_a, $time_b, $format = '' ) {
 	switch ( strtolower( $format ) ) {
 
 		case 'mysql' :
-			return date( 'Y-m-d H:i:s', $timediff );
+			return date( 'Y-m-d H:i:s', abs( $timediff ) );
 			break;
 
 		case 'object' :
@@ -198,13 +198,14 @@ function filter_url( $url ) {
 	}
 	
 	// Arrayfy the path
-	if ( isset( $url['path'] ) && false !== strpos( $url['path'], '/' ) ) {
-		$url['path'] = split( '/', $url['path'] );		
+	if ( isset( $url['path'] ) && false !== $pos = strpos( $url['path'], '/' ) ) {
+		$url['path'] = split( '/', trim( $url['path'], '/' ) );
+		
 	}
 	
 	// Parse the query string
 	if ( isset( $url['query'] ) ) {
-		$url['query'] = parse_str( $url['query'] );
+		parse_str( $url['query'], $url['query'] );
 	}
 	
 	return (object) $url;
@@ -313,7 +314,7 @@ if ( ! function_exists( 'concatenate' ) ) :
 function concatenate( $excerpt, $limit = false ) {
 	
 	if ( ! $limit )
-		$limit = apply_filters( 'excerpt_length', 30 );
+		$limit = apply_filters( 'excerpt_length', 55 );
 
 
 	mb_internal_encoding( 'UTF-8' );
@@ -376,9 +377,9 @@ endif;
 
 
 
-if ( ! function_exists( 'is_url' ) ) :
+if ( ! function_exists( 'is_IP' ) ) :
 /**
- * Check if the given string is a url
+ * Check if the given string is a IP address
  * 
  * @since 3.5.5
  * 

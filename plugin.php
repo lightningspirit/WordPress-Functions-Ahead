@@ -20,23 +20,18 @@ if ( ! function_exists( 'add_action' ) ) {
 
 }
 
-//
-// Only fire for WordPress > 3.5
-//
-if ( version_compare( get_bloginfo( 'version' ), '3.5', '>=' ) ) {
 	
-	define( 'WP_FUNCTIONS_AHEAD_INC', plugin_dir_path( __FILE__ ) . 'inc/' );
-	
-	include( WP_FUNCTIONS_AHEAD_INC . 'functions.php' );
-	include( WP_FUNCTIONS_AHEAD_INC . 'post-types.php' );
-	include( WP_FUNCTIONS_AHEAD_INC . 'template-tags.php' );
-	
-	if ( is_admin() ) {
-		include( WP_FUNCTIONS_AHEAD_INC . 'admin-menu.php' );
-		
-	}
-	
-	// Include the deprecated functions
-	include( plugin_dir_path( __FILE__ ) . 'deprecated.php' );
+define( 'WP_FUNCTIONS_AHEAD_INC', plugin_dir_path( __FILE__ ) . 'inc/' );
+
+include( WP_FUNCTIONS_AHEAD_INC . 'functions.php' );
+include( WP_FUNCTIONS_AHEAD_INC . 'objects.php' );
+include( WP_FUNCTIONS_AHEAD_INC . 'files.php' );
+include( WP_FUNCTIONS_AHEAD_INC . 'template-tags.php' );
+
+if ( is_admin() ) {
+	include( WP_FUNCTIONS_AHEAD_INC . 'admin.php' );
 	
 }
+
+// Include the deprecated functions
+include( plugin_dir_path( __FILE__ ) . 'deprecated.php' );
