@@ -15,6 +15,54 @@ if ( ! function_exists( 'add_action' ) ) {
 
 // wp-includes/media.php
 
+if ( ! function_exists( 'wp_upload_file' ) ) :
+/**
+ * Uploads one generic file
+ * 
+ * @deprecated 1.1
+ * @since 1.1
+ */
+function wp_upload_file( $post_id, $file ) {
+	
+	
+}
+endif;
+
+
+// wp-includes/media.php
+
+if ( ! function_exists( 'wp_upload_media' ) ) :
+/**
+ * Uploads one generic media (audio, video)
+ * 
+ * @deprecated 1.1
+ * @since 1.1
+ */
+function wp_upload_media( $post_id, $file ) {
+	
+	
+}
+endif;
+
+
+// wp-includes/media.php
+
+if ( ! function_exists( 'wp_upload_image' ) ) :
+/**
+ * Uploads one image
+ * 
+ * @deprecated 1.1
+ * @since 1.1
+ */
+function wp_upload_image( $post_id, $file ) {
+	
+	
+}
+endif;
+
+
+// wp-includes/media.php
+
 if ( ! function_exists( 'wp_upload_attach_file' ) ) :
 /**
  * Uploads the images and unites with the post
@@ -171,11 +219,27 @@ endif;
 
 
 
+if ( ! function_exists( 'is_attachment_image' ) ) :
+/**
+ * Check if the the attachment is an image
+ *
+ * @since 3.5.5
+ */
+function is_attachment_image( $attachment_id ) {
+	if ( @getimagesize( $file ) )
+		return true;
+
+	return false;
+
+}
+endif;
+
+
 if ( ! function_exists( 'wp_is_file_image' ) ) :
 /**
  * Check if the file is an image
  *
- * @since 3.6
+ * @since 3.5.5
  */
 function wp_is_file_image( $file ) {
 	if ( @getimagesize( $file ) )

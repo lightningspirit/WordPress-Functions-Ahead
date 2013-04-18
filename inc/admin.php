@@ -14,6 +14,7 @@ if ( ! function_exists( 'add_action' ) ) {
 
 
 
+
 // wp-admin/includes/menu.php
 
 if ( ! function_exists( 'wp_rename_admin_menu_item' ) ) :
@@ -27,20 +28,68 @@ if ( ! function_exists( 'wp_rename_admin_menu_item' ) ) :
  * @param $new_label
  * @return void
  */
-function wp_rename_admin_menu_item( $old_label, $new_label ) {
+function wp_rename_admin_menu_item( $slug, $label = '', $title = '', $cap = '' ) {
 	global $menu;
 
 	if ( ! is_array( $menu ) )
 		return;
 	
-	array_walk( $menu, '_rename_admin_menu_item_walk', compact( 'old_label', 'new_label' ) );
+	array_walk( $menu, '_rename_admin_menu_item_walk', compact( 'slug', 'label', 'title', 'cap' ) );
 
 }
+endif;
 
-function _rename_admin_menu_item_walk( &$item, $key, $labels ) {
-	if ( $labels['old_label'] == $item[0] )
-		$item[0] = $labels['new_label'];
 
+
+// wp-admin/includes/menu.php
+
+if ( ! function_exists( 'wp_rename_admin_submenu_item' ) ) :
+/**
+ * Change admin menu label
+ *
+ * Useful for renaming items in the admin menu.
+ *
+ * @since 3.6
+ * @param $old_label
+ * @param $new_label
+ * @return void
+ */
+function wp_rename_admin_submenu_item( $parent, $slug, $label = '', $title = '', $cap = '' ) {
+	global $submenu;
+
+	if ( ! is_array( $submenu ) )
+		return false;
+	
+	if ( ! array_key_exists( $parent, $submenu ) )
+		return false;
+	
+	
+	array_walk( $submenu[ $parent ], '_rename_admin_menu_item_walk', compact( 'slug', 'label', 'title', 'cap' ) );
+
+}
+endif;
+
+
+if ( ! function_exists( '_rename_admin_menu_item_walk' ) ) :
+/**
+ * @since 3.5.1
+ */
+function _rename_admin_menu_item_walk( &$item, $key, $page ) {
+	extract( $page );
+	
+	if ( $slug == $item[2] ) {
+		
+		if ( !empty( $label ) )
+			$item[0] = $label;
+		
+		if ( !empty( $title ) && isset( $item[3] ) )
+			$item[3] = $title;
+		
+		if ( !empty( $cap ) && isset( $item[1] ) )
+			$item[1] = $cap;
+		
+	}
+	
 }
 endif;
 

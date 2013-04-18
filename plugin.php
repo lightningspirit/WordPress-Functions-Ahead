@@ -11,6 +11,23 @@ Description: A set of proposed new functions and tweaks for future versions of W
 License: GPLv2
 */
 
+/*
+ * To replace any of this functions please use 'register_pluggable_functions' action hook.
+ * Example:
+ * 
+ * 		function my_bundle_functions() {
+ * 
+ * 			// Register an alternate version of concatenate
+ * 			function concatenate( $arg, $arg2 ) {
+ * 				[...]
+ * 			}
+ * 			
+ * 		}
+ * 		add_action( 'register_pluggable_functions', 'my_bundle_functions' );
+ * 
+ */
+
+
 
 //
 // Checks if it is accessed from Wordpress' index.php
@@ -20,18 +37,33 @@ if ( ! function_exists( 'add_action' ) ) {
 
 }
 
+
+function functions_ahead_init() {
+	define( 'WP_FUNCTIONS_AHEAD_INC', plugin_dir_path( __FILE__ ) . 'inc/' );
 	
-define( 'WP_FUNCTIONS_AHEAD_INC', plugin_dir_path( __FILE__ ) . 'inc/' );
-
-include( WP_FUNCTIONS_AHEAD_INC . 'functions.php' );
-include( WP_FUNCTIONS_AHEAD_INC . 'objects.php' );
-include( WP_FUNCTIONS_AHEAD_INC . 'files.php' );
-include( WP_FUNCTIONS_AHEAD_INC . 'template-tags.php' );
-
-if ( is_admin() ) {
-	include( WP_FUNCTIONS_AHEAD_INC . 'admin.php' );
+	do_action( 'register_pluggable_functions' );
 	
 }
 
-// Include the deprecated functions
-include( plugin_dir_path( __FILE__ ) . 'deprecated.php' );
+add_action( 'plugins_loaded', 'functions_ahead_init' );
+
+
+function register_functions_ahead() {
+	
+	include( WP_FUNCTIONS_AHEAD_INC . 'functions.php' );
+	include( WP_FUNCTIONS_AHEAD_INC . 'objects.php' );
+	include( WP_FUNCTIONS_AHEAD_INC . 'files.php' );
+	include( WP_FUNCTIONS_AHEAD_INC . 'users.php' );
+	include( WP_FUNCTIONS_AHEAD_INC . 'template-tags.php' );
+	
+	if ( is_admin() ) {
+		include( WP_FUNCTIONS_AHEAD_INC . 'admin.php' );
+		
+	}
+	
+	// Include the deprecated functions
+	include( plugin_dir_path( __FILE__ ) . 'deprecated.php' );
+	
+}
+
+add_action( 'register_pluggable_functions', 'register_functions_ahead' );

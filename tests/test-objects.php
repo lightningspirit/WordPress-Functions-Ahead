@@ -10,6 +10,12 @@ class Functions_Ahead_Test_Objects extends WP_UnitTestCase {
 	/**
 	 * Run simple tests
 	 */
+	function test_remove_taxonomy_from_post_type() {
+		unregister_taxonomy_from_object_type( 'category', 'post' );
+		$this->assertEquals( array( 'post_tag', 'post_format' ), get_object_taxonomies( 'post' ) );
+
+	}
+	
 	function test_remove_post_type() {
 		remove_post_type( 'post' );
 		$this->assertNull( get_post_type_object( 'post' ) );

@@ -392,7 +392,7 @@ function wp_breadcrumb_trail( $args = array() ) {
 			'after_current' => '</span>',
 			'echo' => true,
 		)
-	));
+	) );
 
 	
 	// Get all the breadcrumbs
