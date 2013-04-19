@@ -77,8 +77,10 @@ class Functions_Ahead_Test_Users extends WP_UnitTestCase {
 		if ( $this->query->have_users() ) {
 			while ( $this->query->have_users() )
 				$this->query->the_user();
-			
 				$this->assertContains( $user->ID, $this->users );
+				$this->assertEquals( $user, get_user() );
+				$this->assertEquals( $user->data->display_name, get_the_display_name() );
+				$this->assertEquals( get_user_meta( $user->ID, 'description', true ), get_the_biography() );
 			
 		}
 		
