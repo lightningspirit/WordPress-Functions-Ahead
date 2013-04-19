@@ -23,9 +23,11 @@ if ( ! function_exists( 'wp_rename_admin_menu_item' ) ) :
  *
  * Useful for renaming items in the admin menu.
  *
- * @since 3.6
- * @param $old_label
- * @param $new_label
+ * @since 3.5.5
+ * @param string $slug The menu page slug
+ * @param string $label The new label
+ * @param string $title Chege the title
+ * @param string $cap Change capability
  * @return void
  */
 function wp_rename_admin_menu_item( $slug, $label = '', $title = '', $cap = '' ) {
@@ -49,9 +51,12 @@ if ( ! function_exists( 'wp_rename_admin_submenu_item' ) ) :
  *
  * Useful for renaming items in the admin menu.
  *
- * @since 3.6
- * @param $old_label
- * @param $new_label
+ * @since 3.5.5
+ * @param string $parent Parent's slug
+ * @param string $slug The menu page slug
+ * @param string $label The new label
+ * @param string $title Chege the title
+ * @param string $cap Change capability
  * @return void
  */
 function wp_rename_admin_submenu_item( $parent, $slug, $label = '', $title = '', $cap = '' ) {
