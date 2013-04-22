@@ -356,4 +356,100 @@ function get_avatar_uri( $id_or_email, $size = '96', $default = '' ) {
 endif;
 
 
+if ( !function_exists( 'get_pagination' ) ) :
+/**
+ * Return the pagination for the current (or instead, given) WP_Query or WP_Query_Users
+ * object returned by paginate_links() function.
+ *
+ * @since 3.5.5
+ * @uses paginate_links()
+ * @uses $wp_query
+ * @uses $wp_query_users
+ * @uses $post
+ * @uses $user
+ * 
+ * @param array $args Array of arguments for paginate_links()
+ * @param object $wp_query Optional WP_Query or WP_Query_Users object
+ * @return mixed The paginate links return
+ */
+function get_pagination( $args = '', $wp_query = '' ) {
+	global $wp_rewrite;
+	
+	if ( $wp_rewrite->using_permalinks() ) {
+		$url_split = explode( '?', get_pagenum_link(1) );
+		$url_split[0] = trailingslashit( trim( $url_split[0], '/' ) ) . '%_%';
+		
+		if ( isset( $url_split[1] ) && $url_split[1] ) {
+			$url_split[1] = '?'.$url_split[1];
+		}
+		
+		$base = implode( '', $url_split );
+		
+		$format = '';
+		if ( 'index.php/' == $wp_rewrite->root )
+			$format = $wp_rewrite->root;
+		
+		$format .= 'page/%#%/';
+		
+		
+	} else {
+		$base = '%_%';
+		$format = add_query_arg( 'page', '%#%' );
+		
+	}
+	
+	$args = wp_parse_args( $args, array(
+		'base'         => $base,
+		'format'       => $format,
+		'total'        => 1,
+		'current'      => 0,
+		'show_all'     => false,
+		'end_size'     => 1,
+		'mid_size'     => 2,
+		'prev_next'    => true,
+		'prev_text'    => __( '&larr; Previous' ),
+		'next_text'    => __( 'Next &rarr;' ),
+		'type'         => 'plain',
+		'add_args'     => false,
+		'add_fragment' => ''
+	) );
+	
+	
+	if ( '' == $wp_query )
+		global $wp_query;
+		
+	if ( is_a( $wp_query, 'WP_Query' ) ) {
+		$args['total'] = round( $wp_query->max_num_pages );
+		$args['current'] = max( 1, $wp_query->get( 'paged' ) );
+		
+	} elseif ( is_a( $wp_query, 'WP_Query_Users' ) ) {
+		$args['total'] = round( $wp_query->max_num_pages );
+		$args['current'] = max( 1, $wp_query->get( 'paged' ) );
+		
+	}
+	
+	$args 	= apply_filters( 'pre_get_the_pagination', $args, $wp_query );
+	$result = paginate_links( $args );
+	$result = apply_filters( 'get_the_pagination', $result, $args, $wp_query );
+	
+	return $result;
+	
+}
+endif;
+
+
+if ( !function_exists( 'the_pagination' ) ) :
+/**
+ * Displays the pagination for the current WP_Query
+ * object returned by paginate_links() function.
+ *
+ * @since 3.5.5
+ * 
+ * @param array $args Array of arguments for paginate_links()
+ */
+function the_pagination( $args = '' ) {
+	echo get_pagination( $args );
+	
+}
+endif;
 

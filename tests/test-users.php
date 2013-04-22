@@ -52,21 +52,58 @@ class Functions_Ahead_Test_Users extends WP_UnitTestCase {
 	}
 	
 	// test 
-	function test_wp_query_user_globals() {
-		global $user;
+	function test_wp_query_user_globals_with_all() {
 		
-		$users = new WP_Query_Users( array( 'role' => 'administrator' ) );
+		$users = new WP_Query_Users( array( 'role' => 'administrator', 'number' => -1 ) );
 		$this->assertEquals( count( $this->admins ) + 1, (int) $users->get_total() );
 		// TODO: +1 is just a bug fix on tests
 		
-		$users = new WP_Query_Users( array( 'role' => 'author' ) );
+		$users = new WP_Query_Users( array( 'role' => 'author', 'number' => -1 ) );
 		$this->assertEquals( count( $this->authors ), (int) $users->get_total() );
 		
-		$users = new WP_Query_Users( array( 'role' => 'subscriber' ) );
+		$users = new WP_Query_Users( array( 'role' => 'subscriber', 'number' => -1 ) );
 		$this->assertEquals( count( $this->subscribers ), (int) $users->get_total() );
 		
-		$users = new WP_Query_Users();
+		$users = new WP_Query_Users( array( 'number' => -1 ) );
 		$this->assertEquals( $this->total, (int) $users->get_total() );
+		
+	}
+	
+	// test 
+	function test_wp_query_user_globals_4_users() {
+		
+		$count = min( count( $this->authors ), 4 );
+		$users = new WP_Query_Users( array( 'role' => 'author', 'number' => 4 ) );
+		$this->assertEquals( $count, (int) $users->get_total() );
+		
+		$count = min( count( $this->subscribers ), 4 );
+		//$this->expectOutputString('');
+		$users = new WP_Query_Users( array( 'role' => 'subscriber', 'number' => 4 ) );
+		$this->assertEquals( $count, (int) $users->get_total() );
+		
+		$count = min( $this->total, 4 );
+		$users = new WP_Query_Users( array( 'number' => 4 ) );
+		$this->assertEquals( $count, (int) $users->get_total() );
+		
+	}
+	
+	// test 
+	function test_wp_query_user_globals_default_users() {
+		global $user;
+		
+		$default = get_option( 'posts_per_page' );
+		
+		$count = min( count( $this->authors ), $default );
+		$users = new WP_Query_Users( array( 'role' => 'author' ) );
+		$this->assertEquals( $count, (int) $users->get_total() );
+		
+		$count = min( count( $this->subscribers ), $default );
+		$users = new WP_Query_Users( array( 'role' => 'subscriber' ) );
+		$this->assertEquals( $count, (int) $users->get_total() );
+		
+		$count = min( $this->total, $default );
+		$users = new WP_Query_Users();
+		$this->assertEquals( $count, (int) $users->get_total() );
 		
 	}
 	

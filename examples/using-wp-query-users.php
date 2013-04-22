@@ -13,16 +13,14 @@
  * 
  */
 
-// If you are using a paged query
-$page = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
 
 $users = new WP_Query_Users( 
 	array( 
-		'role' => 'subscriber',
-		'orderby' => 'login',
-		'order' => 'ASC',
-		'number' => 10,
-		'offset' => ( $page == 1 ) ? 0 : $page * 10
+		'role' => 'subscriber', // Specifying ONE role to retrieve. Currently WP_User_Query doesn't support array of roles. 
+		'orderby' => 'login', // Ordering by 'ID', 'login', 'display_name', 'nicename', 'email', 'url', 'registered'. Default is 'login'
+		'order' => 'ASC', // ASC or DESC. default is 'DESC'.
+		'number' => 10, // Number of users to return for each page. Default is get_option( 'posts_per_page' ) set in options-reading.php
+		'paged' => max( 1, get_query_var( 'paged' ) ) // Get the global page query var ( [link]/page/<number> ). Default is no pagination.
 	)
 ); 
 
@@ -40,7 +38,7 @@ $users = new WP_Query_Users(
 			<?php echo get_avatar( $user->ID ); ?>
 		</a>
 			
-		<a class="name">
+		<a href="<?php the_user_link(); ?>" class="name">
 			<?php the_display_name(); ?>
 		</a>
 		
@@ -48,10 +46,14 @@ $users = new WP_Query_Users(
 			<?php the_biography(); ?>
 		</a>
 		
+		<?php echo get_custom_user_link( __( 'Link to this user profile' ) ); ?>
+		
 	</div>
 	
 	<?php endwhile; ?>
 	
+	<?php echo get_pagination( null, $users ); ?>
+	
 </div>
 
-<?php wp_reset_userdata(); endif; ?>
+<?php endif; ?>
