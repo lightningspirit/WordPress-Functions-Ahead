@@ -65,6 +65,7 @@ function wp_count_user_objects( $object, $user = '' ) {
 	}
 	
 	switch ( $object ) {
+		case 'comment' :	
 		case 'comments' :
 			$return = (int) $wpdb->get_var( 
 				$wpdb->prepare( 
