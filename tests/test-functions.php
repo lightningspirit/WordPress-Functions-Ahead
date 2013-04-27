@@ -75,5 +75,40 @@ class Functions_Ahead_Test_Functions extends WP_UnitTestCase {
 		$this->assertEquals( 'Lorem ipsum dolor sit amet, consectetur adipisicing eli[...]', concatenate( $lorem ) );
 	
 	}
+	
+	function test_wp_parse_attrs() {
+		$object = new stdClass;
+		$object->property1 = 'hey man!';
+		$object->prop2 = array( 
+			'p1', 'p2', 'a' => 'p3', 8 => array( 'string', $object ) 
+		);
+		
+		$arrr = array(
+			'one', 'a' => 'two', 'three', 0 => 'four', array(
+				'five, six' => 'seven', 'eight', 'nine' => $object
+			)
+		);
+		
+		$array = array(
+			'attr1' => 'value1',
+			'attr2' => 'value2',
+			'attr3' => $arrr,
+			'no_key',
+			'object' => $object,
+			$object,
+ 		);
+		
+		$parsed = wp_parse_attrs( $array, array( 
+			'attr1' => 'qwert123', 'type1' => 'This will be there!' )
+		);
+		
+		// The expected
+		$serialized_object = maybe_serialize( $object );
+		$serialized_array  = maybe_serialize( $arrr );
+		$expect = "attr1=\"value1\" type1=\"This will be there!\" attr2=\"value2\" attr3=\"{$serialized_array}\" 0=\"no_key\" object=\"{$serialized_object}\" 1=\"{$serialized_object}\"";		
+		
+		$this->assertEquals( $parsed, $expect );
+	
+	}
 
 }
