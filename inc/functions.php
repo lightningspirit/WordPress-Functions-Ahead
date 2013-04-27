@@ -243,6 +243,60 @@ endif;
 
 // wp-includes/functions.php
 
+if ( ! function_exists( 'wp_parse_attrs' ) ) : 
+/**
+ * Parses an array of attr => value pairs
+ * and returns an HTML version for tag attributes.
+ * 
+ * It is possible to modify the output format for each $key/$value pair,
+ * using the third parameter. You can modify the global
+ * output with 'wp_parse_attr_output' filter too.
+ * 
+ * If $value is an array or object, the return $value will be serialized.
+ * 
+ * @param array $attrs The array to parse
+ * @param array $defaults Key/value pair of default values. Default is empty.
+ * @param string $format The format for each pair. Use %key% and %value% tags to be replace. Default is `%key%="%value%" `
+ * @param string $glue the separator. Type ARRAY if you want to return the array. Default is space.
+ * 
+ * @return string the output
+ *
+ * @since 3.5.7
+ */
+function wp_parse_attrs( $attrs, $defaults = '', $format = '%key%="%value%"', $glue = ' ' ) {
+	$attrs = wp_parse_args( $attrs, $defaults );
+	
+	if ( empty( $attrs ) )
+		return false;
+	
+	$r = array();
+	foreach ( $attrs as $key => $value ) {
+		if ( is_array( $value ) || is_object( $value ) )
+			$value = maybe_serialize( $value );
+		
+		$r[] = str_replace( array( '%key%', '%value%' ), array( $key, $value ), $format );
+		
+	}
+	
+	
+	// Allow devs to hack the output
+	$r = apply_filters( 'wp_parse_attr_output', $r, $attrs, $format );
+	
+	switch ( $glue ) {
+		case 'ARRAY' :
+			return $r;
+			
+		default :
+			return trim( join( $glue, $r ) );
+		
+	}
+	
+}
+endif;
+
+
+// wp-includes/functions.php
+
 if ( ! function_exists( 'get_http_host' ) ) :
 /**
  * Get the HTTP Host
