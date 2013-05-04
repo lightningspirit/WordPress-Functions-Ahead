@@ -1,0 +1,9 @@
+Plugin Name: Functions Ahead
+Plugin URI: https://github.com/lightningspirit/WordPress-Functions-Ahead/
+Version: 3.5.7
+Text Domain: functions
+Domain Path: /languages/
+Author: lightningspirit
+Author URL: http://profiles.wordpress.org/lightningspirit
+Description: Package of some new WordPress functions and classes to help plugin and theme developers
+License: GPLv2
