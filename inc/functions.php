@@ -373,6 +373,7 @@ function concatenate( $excerpt, $limit = false ) {
 
 	mb_internal_encoding( 'UTF-8' );
 
+	$dots = '';
 	if ( mb_strlen( $excerpt ) > $limit )
 		$dots = apply_filters( 'excerpt_more', '[...]' );
 
