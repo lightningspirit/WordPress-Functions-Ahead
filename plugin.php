@@ -16,11 +16,7 @@ License: GPLv2
  * Example:
  * 
  * 		function my_bundle_functions() {
- * 
- * 			// Register an alternate version of concatenate
- * 			function concatenate( $arg, $arg2 ) {
- * 				[...]
- * 			}
+ * 			include( path/to/my/functions/file.php );
  * 			
  * 		}
  * 		add_action( 'register_pluggable_functions', 'my_bundle_functions' );
@@ -37,8 +33,22 @@ if ( ! function_exists( 'add_action' ) ) {
 
 }
 
-
+/** 
+ * {@internal Missing Short Description}}
+ * 
+ * @since 3.5.1
+ * 
+ * @return void
+ */
 function functions_ahead_init() {
+	// Load the text domain to support translations
+	load_plugin_textdomain( 'functions', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+	
+	// if new upgrade
+	if ( version_compare( (int) get_option( 'wp_functions_ahead_plugin_version' ), '3.5.9', '<' ) )
+		add_action( 'init', 'functions_ahead_do_upgrade' );
+
+
 	define( 'WP_FUNCTIONS_AHEAD_INC', plugin_dir_path( __FILE__ ) . 'inc/' );
 	
 	do_action( 'register_pluggable_functions' );
@@ -47,7 +57,13 @@ function functions_ahead_init() {
 
 add_action( 'plugins_loaded', 'functions_ahead_init' );
 
-
+/** 
+ * {@internal Missing Short Description}}
+ * 
+ * @since 3.5.1
+ * 
+ * @return void
+ */
 function register_functions_ahead() {
 	
 	include( WP_FUNCTIONS_AHEAD_INC . 'functions.php' );
@@ -71,3 +87,16 @@ function register_functions_ahead() {
 }
 
 add_action( 'register_pluggable_functions', 'register_functions_ahead' );
+
+
+/** 
+ * {@internal Missing Short Description}}
+ * 
+ * @since 3.5.9
+ * 
+ * @return void
+ */
+function functions_ahead_do_upgrade() {
+	update_option( 'wp_functions_ahead_plugin_version', '3.5.9' );
+
+}

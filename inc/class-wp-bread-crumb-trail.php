@@ -2,7 +2,7 @@
 /**
  * WP_Bread_Crumb_Trail Class
  * 
- * @since 3.5.5
+ * @since 3.5.8
  * 
  */
 
@@ -28,34 +28,192 @@ if ( ! class_exists( 'WP_Bread_Crumb_Trail' ) ) :
  * 'home' 
  * ...
  * 
- * @since 3.5.5
+ * @since 3.5.8
  */
-class WP_Bread_Crumb_Trail {
+final class WP_Bread_Crumb_Trail {
 	
-	public $args;
+	/**
+	 * The parameters
+	 * @since 3.5.8
+	 */
+	private $args;
 	
+	/**
+	 * The array of trail
+	 * @since 3.5.8
+	 */
 	public $trail;
 	
+	/**
+	 * Parse arguments and calls the appropriate functions
+	 * @since 3.5.8
+	 */
 	public function __construct( $args = '' ) {
 		$this->args = wp_parse_args( $args, array(
 			'show_on_home' => true,
 			'delimiter' => ' &raquo; ',
 			'home' => __( 'Home' ),
+			'404' => __( 'Not found', 'functions' ),
+			'posts_archive' => __( 'Posts' ), 
 			'link_current' => true,
-			'wrapper' => '<div id="breadcrumbs">%s</div>',
+			'wrapper' => '<div class="wp-breadcrumb-trail breadcrumb-trail-items">%s</div>',
 			'class_link' => 'breadcrumb-item',
 			'before_link' => '',
 			'after_link' => '',
 			'before_current' => '<span class="current">',
 			'after_current' => '</span>',
-			'echo' => true,
+			'maxlength' => '5',
+			'maxtextchars' => '30',
 			)
 		);
 		
+		/* 
+		 * Begin the construct
+		 */
 		
+		//
+		// If show_on_home is true and in frontpage, show it.
+		// If not in frontpage show it elsewhere.
+		//
+		if ( !is_front_page() || ( is_front_page() && $this->args['show_on_home'] ) ) :
+			
+			$object = get_queried_object();
+			
+
+			
+			$trail[] = $this->get_item( 'home', $object );
+
+		endif;
+
+
+
+		// If is home (archive of posts) but not
+		// in frontpage, add it.
+		if ( is_home() && !is_front_page() ) :
+			$trail[] = $this->get_item( 'posts_archive', $this->args['posts_archive'], current_url() );
+
+		elseif ( is_category() ) :
+			$trail[] = $this->get_item( 'category', get_queried_object() );
+
+		elseif ( is_tag() ) :
+
+
+		elseif ( is_tax() ) :
+
+
+		elseif ( is_post_type_archive() ) :
+
+		
+		elseif ( is_author() ) :
+
+
+		elseif ( is_date() ) :
+
+			if ( is_year() ) :
+
+			elseif ( is_month() ) :
+
+			elseif ( is_day() ) :
+
+			elseif ( is_time() ) :
+
+			endif;
+
+
+		elseif ( is_page() ) :
+
+		elseif ( is_single() ) :
+
+		elseif ( is_attachment() ) :
+
+		elseif ( is_search() ) :
+
+		elseif ( is_404() ) :
+			$trail[] = $this->get_item( '404', $this->args['404'], '' );
+
+		endif;
+
+		/*
+		 * Test for paged content
+		 */
+		if ( is_paged() ) :
+
+
+		endif;
+
+		$this->trail = $trail;
+
+	}
+
+	/**
+	 * Determines the query object
+	 *
+	 * @since 3.5.8
+	 *
+	 * @return object WP_Bread_Crumb_Item
+	 */
+	private function get_item( $type, $object ) {
+		
+		$item = new StdClass;
+		$item->type = $type;
+
+		// Object is a Post
+		if ( is_a( $object, 'WP_Post' ) ) {
+			$item->ID 	= $object->ID;
+			$item->text = $object->post_title;
+			$item->link = get_permalink( $object->ID );
+
+		// Object is a User
+		} elseif ( is_a( $object, 'WP_User' ) ) {
+			$item->ID 	= $object->ID;
+			$item->text = $object->data->display_name;
+			$item->link = get_author_posts_url( $object->ID );
+
+		// Object is a Taxonomy
+		} elseif ( isset( $object->term_id ) ) {
+			$item->ID 	= $object->term_id;
+			$item->text = $object->name;
+			$item->link = get_term_link( $object->term_id, $object->taxonomy );
+
+		// Home, 404 Search, Archives, etc...
+		} else {
+			$item->ID 	= 0;
+			$item->text = $object->;
+			$item->link = get_term_link( $object->term_id, $object->taxonomy );
+
+		}
+
+		// Concatenate text
+		if ( is_numeric( $this->args['maxlength'] ) && $this->args['maxlength'] != 0 )
+			$item->text = concatenate( $item->text, (int) $this->args['maxlength'] );
+
+		$item->link = esc_url( $item->link );
+		if ( !is_url( $item->link ) )
+			$item->link = false;
+
+
+		return $item;
+
+	}
+
+	/**
+	 * Renders the breadcrumb trail
+	 * creating an HTML version of it.
+	 * 
+	 * @since 3.5.8
+	 *
+	 * @param string $format. Currently, only 'html' is supported.
+	 * @return string HTML, XML, JSON of the breadcrumb trail.
+	 */
+	public function render( $format = '' ) {
+		if ( empty( $format ) )
+			$format = 'html';
+
+		var_dump($this->trail);
+		return $html;
 		
 	}
-	
+
 }
 endif;
 
@@ -64,7 +222,7 @@ endif;
 
 if ( ! function_exists( 'wp_breadcrumb_trail' ) ) :
 /**
- * Adds a breadcrumb trail
+ * Returns or displays a breadcrumb trail
  *
  * $args:
  * 'show_on_home' true
@@ -72,20 +230,26 @@ if ( ! function_exists( 'wp_breadcrumb_trail' ) ) :
  * 'home' 
  * ...
  *
- * @since 3.5.5
+ * @since 3.5.8
  * 
  * @param array $args
  * @return The crumbs html
  */
 function wp_breadcrumb_trail( $args = array() ) {
-	global $post;
-	
+	$args = wp_parse_args( $args, array( 'format' => '', 'echo' => true ) );
+
 	$trail = new WP_Bread_Crumb_Trail( $args );
+	$trail = apply_filters( 'wp_breadcrumb_trail', $trail, $args );
 	
-	echo $trail->render();
+	//if ( $args['echo'] )
+	//	echo $trail->render( $args['format'] );
+
+	return $trail->render( $args['format'] );
 	
 }
-	
+endif;
+
+
 /*	extract( wp_parse_args( $args, 
 		array(
 			'show_on_home' => true,
@@ -264,4 +428,3 @@ function wp_breadcrumb_trail( $args = array() ) {
 	return $crumbs_string;
 
 }*/
-endif;
