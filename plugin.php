@@ -65,9 +65,6 @@ function register_functions_ahead() {
 	
 	// Include the deprecated functions
 	include( plugin_dir_path( __FILE__ ) . 'deprecated.php' );
-
-	// Load update
-	include( plugin_dir_path( __PATH__) . 'update.php' );
 	
 }
 
