@@ -2,7 +2,7 @@
 /*
 Plugin Name: Functions Ahead
 Plugin URI: http://www.vcarvalho.com/
-Version: 3.5.8
+Version: 3.5.9
 Text Domain: functions
 Domain Path: /languages/
 Author: lightningspirit
