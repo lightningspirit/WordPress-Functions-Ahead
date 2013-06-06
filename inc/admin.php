@@ -135,3 +135,97 @@ function get_action_post_link( $post_id, $action = 'trash' ) {
 }
 endif;
 
+
+
+
+if ( ! function_exists( 'wp_form_table' ) ) :
+/**
+ * Create a form table given an array of fields
+ * 
+ * @since 3.6
+ * 
+ * @param array $fields Array of organized fields
+ * @param bool $echo. Default is true.
+ * @return bool|WP_Error
+ */
+function wp_form_table( $fields, $echo = true ) {
+	global $_form_table;
+	
+	$_form_table = new WP_Admin_Table_Form();
+	$_form_table->get_header();
+	$_form_table->add_fields( $fields );
+	$_form_table->organize_fields();
+	$_form_table->get_footer();
+	
+	if ( $echo )
+		$_form_table->render();
+	
+	return $_form_table;
+	
+}
+endif;
+
+
+
+
+/**
+ * Constructor of admin tables. Helper.
+ *
+ * @since 3.6
+ */
+
+class WP_Admin_Table_Form extends WP_Admin_Form {
+
+	public function get_header() {
+		$this->html .= "\n<table class=\"form-table\">\n\t<tbody>";
+		
+	}
+	
+	public function get_footer( $show_hidden_fields = true ) {
+		$this->html .= "\n\t</tbody>\n</table>\n";
+		
+		if ( $show_hidden_fields )
+			$this->get_hidden_fields();
+		
+	}
+	
+	public function get_hidden_fields() {
+		if ( ! isset( $this->fields ) )
+			return;
+		
+		foreach ( (array) $this->fields as $field ) {
+			if ( ! is_object( $field ) )
+				$field = (object) $field;
+			
+			if ( 'hidden' != $field->type )
+				continue;
+			
+			$this->html .= "\n{$field->field}";
+			
+		}
+		
+	}
+	
+	public function organize_fields() {
+		if ( ! isset( $this->fields ) )
+			return;
+		
+		foreach ( (array) $this->fields as $field ) {
+			if ( ! is_object( $field ) )
+				$field = (object) $field;
+			
+			if ( 'hidden' == $field->type )
+				continue;
+			
+			$this->html .= sprintf( "\n\t\t<tr valign=\"top\">\n\t\t\t<th scope=\"row\">{$field->label}</th>\n\t\t\t<td>{$field->field}</td>\n\t\t</tr>" );
+			
+		}
+		
+	}
+	
+	public function render() {
+		echo "\n".$this->html."\n";
+		
+	}
+	
+}

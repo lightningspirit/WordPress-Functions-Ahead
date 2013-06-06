@@ -256,8 +256,8 @@ if ( ! function_exists( 'wp_parse_attrs' ) ) :
  * 
  * @param array $attrs The array to parse
  * @param array $defaults Key/value pair of default values. Default is empty.
- * @param string $format The format for each pair. Use %key% and %value% tags to be replace. Default is `%key%="%value%" `
- * @param string $glue the separator. Type ARRAY if you want to return the array. Default is space.
+ * @param string $format The format for each pair. Use %key% and %value% tags to be replace. Default is `%key%="%value%"`
+ * @param string $glue the separator. Type ARRAY if you want to return the array. Default is a space ` `.
  * 
  * @return string the output
  *
@@ -293,6 +293,7 @@ function wp_parse_attrs( $attrs, $defaults = '', $format = '%key%="%value%"', $g
 	
 }
 endif;
+
 
 
 // wp-includes/functions.php
@@ -451,3 +452,22 @@ function is_IP( $IP ) {
 endif;
 
 
+
+
+if ( ! function_exists( 'is_browser' ) ) :
+/**
+ * Evaluate the browser name and version
+ * 
+ * @since 3.6
+ * 
+ * @param string|array $param You can set the name or pass an args array
+ * @param string $condition 'and' or 'or'
+ * @return bool
+ */
+function is_browser( $param, $condition = 'and' ) {
+	if ( is_array( $param ) ) {
+
+	}
+
+}
+endif;

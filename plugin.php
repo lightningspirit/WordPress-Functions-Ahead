@@ -73,7 +73,9 @@ function register_functions_ahead() {
 	include( WP_FUNCTIONS_AHEAD_INC . 'class-wp-query-users.php' );
 	include( WP_FUNCTIONS_AHEAD_INC . 'users.php' );
 	
-	include( WP_FUNCTIONS_AHEAD_INC . 'class-wp-bread-crumb-trail.php' );
+	//include( WP_FUNCTIONS_AHEAD_INC . 'class-wp-bread-crumb-trail.php' );
+	include( WP_FUNCTIONS_AHEAD_INC . 'class-wp-admin-form.php' );
+	include( WP_FUNCTIONS_AHEAD_INC . 'class-register-post-type.php' );
 	include( WP_FUNCTIONS_AHEAD_INC . 'template-tags.php' );
 	
 	if ( is_admin() ) {
