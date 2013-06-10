@@ -272,7 +272,8 @@ function wp_parse_attrs( $attrs, $defaults = '', $format = '%key%="%value%"', $g
 	$r = array();
 	foreach ( $attrs as $key => $value ) {
 		if ( is_array( $value ) || is_object( $value ) )
-			$value = maybe_serialize( $value );
+			if ( !is_serialized( $value ) )
+				$value = maybe_serialize( $value );
 		
 		$r[] = str_replace( array( '%key%', '%value%' ), array( $key, $value ), $format );
 		
@@ -443,11 +444,8 @@ if ( ! function_exists( 'is_IP' ) ) :
  * @return bool 
  */
 function is_IP( $IP ) {
-	if ( filter_var( $IP, FILTER_VALIDATE_IP ) )
-		return true;
-
-	return false;
-
+	return ( filter_var( $IP, FILTER_VALIDATE_IP ) );
+	
 }
 endif;
 
@@ -464,10 +462,41 @@ if ( ! function_exists( 'is_browser' ) ) :
  * @param string $condition 'and' or 'or'
  * @return bool
  */
-function is_browser( $param, $condition = 'and' ) {
-	if ( is_array( $param ) ) {
+function is_browser( $browser ) {
+	global $is_IE, $is_iphone, $is_chrome, $is_safari, $is_opera, $is_gecko, $is_lynx;
+
+	switch ( strtolower( $browser ) ) {
+		case 'ie' :
+		case 'iexplorer' :
+			return $is_IE;
+
+		case 'ff' :
+		case 'firefox' :
+			return $is_gecko;
+
+		case 'chrome' :
+		case 'chromium' :
+			return $is_chrome;
+
+		case 'safari' :
+			return $is_safari;
+
+		case 'opera' :
+			return $is_opera;
+
+		case 'iphone' :
+		case 'mobile' :
+			return $is_iphone;
+
+		case 'lynx' :
+		case 'links' :
+		case 'text' :
+		case 'old' :
+			return $is_lynx;
 
 	}
+
+	return null;
 
 }
 endif;

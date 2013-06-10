@@ -13,7 +13,7 @@ if ( ! function_exists( 'add_action' ) ) {
 }
 
 
-// wp-includes/media.php
+// wp-includes/file.php
 
 if ( ! function_exists( 'wp_upload_file' ) ) :
 /**
@@ -23,7 +23,56 @@ if ( ! function_exists( 'wp_upload_file' ) ) :
  * @since 1.1
  */
 function wp_upload_file( $post_id, $file, $info = '' ) {
-	
+
+	$overrides = array( 'test_form' => false);
+	require_once(ABSPATH . 'wp-admin/includes/file.php');
+
+	if ( !isset( $info['time'] ) )
+		$info['time'] = date( 'Y/m' );
+
+	if ( is_array( $file ) ) {
+		$wp_file = wp_handle_upload( $file, array( 'test_form' => false ), $info['time'] );
+
+	} elseif ( is_string( $file ) ) {
+
+		$filename = download_url( esc_url( $file ) );
+		chmod( $filename, 0755 );
+		$mime = wp_check_filetype( $filename );
+		
+		$file_array = array(
+			'name'      => get_post( $post_id )->post_title,
+			'type'      => $mime['type'],
+			'size'      => filesize( $filename ),
+			'tmp_name'  => $filename
+		);
+		
+		$wp_file = wp_handle_sideload( $file_array, array( 'test_form' => false, 'test_upload' => false, 'test_type' => false ), $info['time'] );
+		unlink( $filename );
+
+	}
+
+	$wp_file['id'] = wp_insert_attachment( 
+		array(
+			'guid' => $wp_file['url'],
+			'post_title' => preg_replace( '/\.[^.]+$/', '', basename( $wp_file['file'] ) ),
+			'post_mime_type' => $wp_file['type'],
+			'post_content' => '',
+			'post_status' => 'inherit',
+		), 
+		$wp_file['file'], (int) $post_id 
+	);
+
+
+	// If image handle the image stuff
+
+	if ( wp_is_file_image( $wp_file['file'] ) ) {
+		require_once( ABSPATH . '/wp-admin/includes/image.php' );
+		$image_data = wp_generate_attachment_metadata( $wp_file['id'], $wp_file['file'] );
+		wp_update_attachment_metadata( $wp_file['id'], $image_data );
+
+	}
+
+	return $wp_file['id'];
 	
 }
 endif;
@@ -39,13 +88,15 @@ if ( ! function_exists( 'wp_upload_media' ) ) :
  * @since 1.1
  */
 function wp_upload_media( $post_id, $file, $info = '' ) {
-	
+
+	media_handle_upload($file_id, $post_id, $post_data = array(), $overrides = array( 'test_form' => false ));
+	media_handle_sideload($file_array, $post_id, $desc = null, $post_data = array());
 	
 }
 endif;
 
 
-// wp-includes/media.php
+// wp-includes/image.php
 
 if ( ! function_exists( 'wp_upload_image' ) ) :
 /**
@@ -55,149 +106,22 @@ if ( ! function_exists( 'wp_upload_image' ) ) :
  * @since 1.1
  */
 function wp_upload_image( $post_id, $file, $info = '' ) {
-	
-	
-}
-endif;
-
-
-// wp-includes/media.php
-
-if ( ! function_exists( 'wp_upload_attach_file' ) ) :
-/**
- * Uploads the images and unites with the post
- * 
- * @deprecated 1.1
- * @since 1.1
- */
-function wp_upload_attach_file( $post_id, $file ) {
 
 	$overrides = array( 'test_form' => false);
-	require_once(ABSPATH . 'wp-admin/includes/media.php');
 	require_once(ABSPATH . 'wp-admin/includes/file.php');
-	require_once(ABSPATH . 'wp-admin/includes/image.php');
-	
-	
+	require_once(ABSPATH . 'wp-admin/includes/media.php');
+
+	if ( !isset( $info['time'] ) )
+		$info['time'] = date( 'Y/m' );
+
 	if ( is_array( $file ) ) {
-		$wp_file = wp_handle_upload( $file, $overrides );
-	
-	} elseif ( is_string( $file ) ) {
-			
-		$filename = download_url( esc_url( $file ) );
-		chmod( $filename, 0755 );
-		$mime = wp_check_filetype( $filename );
-		
-		$file_array = array(
-			'name'      => get_post( $post_id )->post_title,
-			'type'      => $mime['type'],
-			'size'      => filesize( $filename ),
-			'tmp_name'  => $filename
+		$_FILES[0] = array(
+
 		);
-		
-		$wp_file = wp_handle_sideload( $file_array, array( 'test_form' => false, 'test_upload' => false, 'test_type' => false ) );
-		unlink( $filename );
-		
-	}
+		return media_handle_upload( $file, array( 'test_form' => false ), $info['time'] );
 
-	$wp_file['id'] = wp_insert_attachment( array(
-		'guid' => $wp_file['url'],
-		'post_title' => get_post( $post_id )->post_title . '-' . preg_replace( '/\.[^.]+$/', '', basename( $wp_file['file'] ) ),
-		'post_mime_type' => $wp_file['type'],
-		'post_content' => '',
-		'post_status' => 'inherit',
-
-	), $wp_file['file'], (int) $post_id );
-
-
-	// If image handle the image stuff
-
-	if ( wp_is_file_image( $wp_file['file'] ) ) {
-		require_once( ABSPATH . '/wp-admin/includes/image.php' );
-		$image_data = wp_generate_attachment_metadata( $wp_file['id'], $wp_file['file'] );
-		wp_update_attachment_metadata( $wp_file['id'], $image_data );
-
-	}
-
-	return $wp_file['id'];
-
-}
-endif;
-
-
-
-
-
-// wp-includes/media.php
-
-if ( ! function_exists( 'media_upload' ) ) :
-/**
- * Adds an attachment to the media gallery
- * 
- * @since 1.1
- * 
- * @param array|string $file Can be URL, Local path or a single $_FILES array
- * @param int $post_id Attach to this post ID. Optional.
- * @param array $args A set of args to pass.
- * @return int The attachment ID
- *  
- */
-function media_upload( $file, $post_id = '', $args = '' ) {
-	
-	if ( empty( $file ) )
-		return new WP_Error( 'file_empty', __( 'The file argument is empty.' ) );
-	
-	extract( wp_parse_args( $args, array(
-		'attachment_title' => '',
-		)
-	));
-	
-	
-	// Is a localpath
-	if ( file_exists( $file ) ) {
-		
-	
-	// Is a $_FILES single array
-	} elseif ( is_array( $file ) ) {
-		
-		
-	} elseif ( is_url( $file ) ) {
-		
-		
-	}
-	
-	
-
-	$overrides = array( 'test_form' => false);
-	require_once(ABSPATH . 'wp-admin/includes/media.php');
-	require_once(ABSPATH . 'wp-admin/includes/file.php');
-	require_once(ABSPATH . 'wp-admin/includes/image.php');
-	
-	
-	if ( is_array( $file ) ) {
-		$wp_file = wp_handle_upload( $file, $overrides );
-		$wp_file['id'] = wp_insert_attachment( array(
-			'guid' => $wp_file['url'],
-			'post_title' => get_post( $post_id )->post_title . '-' . preg_replace( '/\.[^.]+$/', '', basename( $wp_file['file'] ) ),
-			'post_mime_type' => $wp_file['type'],
-			'post_content' => '',
-			'post_status' => 'inherit',
-	
-		), $wp_file['file'], (int) $post_id );
-	
-	
-		// If image handle the image stuff
-	
-		if ( wp_is_file_image( $wp_file['file'] ) ) {
-			require_once( ABSPATH . '/wp-admin/includes/image.php' );
-			$image_data = wp_generate_attachment_metadata( $wp_file['id'], $wp_file['file'] );
-			wp_update_attachment_metadata( $wp_file['id'], $image_data );
-	
-		}
-	
-		return $wp_file['id'];
-	
 	} elseif ( is_string( $file ) ) {
-			
+
 		$tmp = download_url( esc_url( $file ) );
 		preg_match( '/[^\?]+\.(jpe?g|jpe|gif|png)\b/i', $file, $matches );
 		$file_array['name'] = basename($matches[0]);
@@ -209,15 +133,20 @@ function media_upload( $file, $post_id = '', $args = '' ) {
 			$file_array['tmp_name'] = '';
 
 		}
-		
+
 		return media_handle_sideload( $file_array, $post_id );
-		
+
 	}
 
+	media_handle_upload($file_id, $post_id, $post_data = array(), $overrides = array( 'test_form' => false ));
+	media_handle_sideload($file_array, $post_id, $desc = null, $post_data = array());
+	
 }
 endif;
 
 
+
+// wp-includes/template-tags.php
 
 if ( ! function_exists( 'is_attachment_image' ) ) :
 /**
@@ -226,27 +155,7 @@ if ( ! function_exists( 'is_attachment_image' ) ) :
  * @since 3.6
  */
 function is_attachment_image( $attachment_id ) {
-	if ( @getimagesize( $file ) )
-		return true;
-
-	return false;
+	return ( 'image' == substr( get_post( $attachment_id )->post_mime_type, 0, 5 ) );
 
 }
 endif;
-
-
-if ( ! function_exists( 'wp_is_file_image' ) ) :
-/**
- * Check if the file is an image
- *
- * @since 3.6
- */
-function wp_is_file_image( $file ) {
-	if ( @getimagesize( $file ) )
-		return true;
-
-	return false;
-
-}
-endif;
-
