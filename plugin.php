@@ -95,7 +95,7 @@ function _wp_register_functions_files() {
 	}
 	
 	// Include the deprecated functions
-	include( plugin_dir_path( __FILE__ ) . 'deprecated.php' );
+	include( WP_FUNCTIONS_AHEAD_DIR . 'deprecated.php' );
 
 	// Fire bootstrap
 	include( WP_FUNCTIONS_AHEAD_INC . 'bootstrap.php' );

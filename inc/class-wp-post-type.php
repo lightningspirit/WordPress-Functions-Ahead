@@ -59,13 +59,20 @@ final class WP_Post_Type {
 		add_action( 'edit_post', array( $this, 'save_edit_post_metas' ) );
 		add_action( 'edit_form_after_title', array( $this, 'render_nonce_field' ) );
 
+		if ( isset( get_post_type_object( $post_type )->columns_cb ) && is_callable( get_post_type_object( $post_type )->columns_cb ) )
+			add_action( "manage_{$post_type}_posts_custom_column", get_post_type_object( $post_type )->columns_cb );
+
+		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
+
 	}
 
 	/**
 	 * @since 3.6
 	 */
 	public function set_post_type_messages( $messages ) {
-		global $post;
+		global $post, $post_ID;
+
+		//var_dump( $messages );
 		
 		/* Declare objects */
 		$post_type = $this->post_type;
@@ -83,7 +90,7 @@ final class WP_Post_Type {
 			$msgs = $post_type_object->messages;
 
 			if ( isset( $msgs['updated_view'] ) )
-				$messages[ $post_type ][1] = sprintf( $messages['updated_view'], esc_url( get_permalink( $post_ID ) ) );
+				$messages[ $post_type ][1] = sprintf( $msgs['updated_view'], esc_url( get_permalink( $post_ID ) ) );
 
 			if ( isset( $msgs['updated'] ) ) {
 				$messages[ $post_type ][2] = $msgs['updated'];
@@ -97,21 +104,21 @@ final class WP_Post_Type {
 				$messages[ $post_type ][7] = $msgs['saved'];
 
 			if ( isset( $msgs['revision_restored'] ) )
-				$messages[ $post_type ][5] = isset( $_GET['revision'] ) ? sprintf( $messages['revision_restored'], wp_post_revision_title( (int) $_GET['revision'], false ) ) : false;
+				$messages[ $post_type ][5] = isset( $_GET['revision'] ) ? sprintf( $msgs['revision_restored'], wp_post_revision_title( (int) $_GET['revision'], false ) ) : false;
 
 			if ( isset( $msgs['published'] ) )
-				$messages[ $post_type ][6] = sprintf( $messages['published'], esc_url( get_permalink($post_ID) ) );
+				$messages[ $post_type ][6] = sprintf( $msgs['published'], esc_url( get_permalink($post_ID) ) );
 
 			if ( isset( $msgs['submitted'] ) )
-				$messages[ $post_type ][8] = sprintf( $messages['submitted'], esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ) );
+				$messages[ $post_type ][8] = sprintf( $msgs['submitted'], esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ) );
 
 			if ( isset( $msgs['scheduled'] ) )
-				$messages[ $post_type ][9] =  printf( __('Post scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview post</a>'),
+				$messages[ $post_type ][9] =  sprintf( $msgs['scheduled'],
 					// translators: Publish box date format, see http://php.net/date
 					date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ), esc_url( get_permalink($post_ID) ) );
 
 			if ( isset( $msgs['draft_updated'] ) )
-				$messages[ $post_type ][8] = sprintf( $messages['draft_updated'], esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ) );
+				$messages[ $post_type ][8] = sprintf( $msgs['draft_updated'], esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ) );
 			
 
 		}
@@ -216,11 +223,14 @@ final class WP_Post_Type {
 		
 		// For each meta field
 		foreach ( (array) $post_type_object->post_meta as $meta => $field ) {
-			if ( isset( $field->save ) && false == $field->save )
+			if ( isset( $field['save'] ) && false == $field['save'] )
+				continue;
+
+			if ( 'display' == $field['type'] )
 				continue;
 			
-			if ( isset( $_REQUEST[ $meta ] ) && is_callable( $field->validate ) )
-				$value = call_user_func( $field->validate, $_REQUEST[ $meta ], $meta, $field, $post_id );
+			if ( isset( $_REQUEST[ $meta ] ) && isset( $field['validate'] ) && is_callable( $field['validate'] ) )
+				$value = call_user_func( $field['validate'], $_REQUEST[ $meta ], $meta, $field, $post_id );
 
 			elseif ( isset( $_REQUEST[ $meta ] ) )
 				$value = call_user_func( 'esc_html', $_REQUEST[ $meta ] );
@@ -242,6 +252,65 @@ final class WP_Post_Type {
 				add_post_meta( $post_id, $meta, $value );
 			
 		}
+		
+	}
+
+	/**
+	 * Add post meta boxes
+	 *
+	 * @since 3.6
+	 *
+	 */
+	public function add_meta_boxes() {
+		global $post_type;
+
+		$object = get_post_type_object( $post_type );
+
+		if ( isset( $object->metaboxes ) )
+			foreach ( $object->metaboxes as $metabox ) {
+				$metas = isset( $metabox['metas'] ) ? $metabox['metas'] : '';
+				$position = isset( $metabox['context'] ) ? $metabox['context'] : 'normal';
+				$priority = isset( $metabox['priority'] ) ? $metabox['priority'] : 'default';
+				add_meta_box( $metabox['id'], $metabox['title'], array( $this, 'render_post_metas' ), $post_type, $position, $priority, $metas );
+
+			}
+		
+
+	}
+
+	/**
+	 * Renders post metas
+	 *
+	 * @since 3.6
+	 *
+	 */
+	public function render_post_metas( $post, $metas = '' ) {
+		global $post, $post_type;
+
+		// Get all the meta fields
+		$post_metas = get_post_type_object( $post_type )->post_meta;
+
+		if ( ! empty( $metas['args'] ) ) {
+			// Intersect and filter by the post meta keys asked
+			$post_metas = array_intersect_key( 
+				$post_metas, array_combine( $metas['args'], $metas['args'] ) 
+			);
+
+		}
+
+		// If value parameter is not set pre-fill it with value from DB
+		foreach ( $post_metas as $meta => $args ) {
+
+			// The value is already set
+			if ( isset( $args['value'] ) )
+				continue;
+
+			$post_metas[ $meta ]['value'] = get_post_meta( $post->ID, $meta, true );
+
+		}
+
+		// Render the table
+		wp_form_table( $post_metas );
 		
 	}
 

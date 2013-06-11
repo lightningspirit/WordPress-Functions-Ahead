@@ -43,11 +43,12 @@ function _wp_initial_post_stuff() {
 	$post_types = (array) apply_filters( '_wp_post_types', get_post_types( array( 'show_ui' => true ), 'objects' ) );
 
 	foreach ( $post_types as $post_type => $object ) {
-		$wp_post_types[ $post_type ]->object = new WP_Post_Type( $post_type, $object );
+		$wp_post_types[ $post_type ]->wp_post_type = new WP_Post_Type( $post_type, $object );
 
 	}
 
 	/* New post status Archived */
+	
 	register_post_status( 'archive', array(
 		'label' => __( 'Archived', '_wp' ),
 		'label_count' => _n_noop( 
@@ -74,7 +75,7 @@ function _wp_initial_post_stuff() {
 
 }
 
-add_action( 'init', '_wp_initial_post_stuff', 0 );
+add_action( 'wp_loaded', '_wp_initial_post_stuff', 0 );
 
 
 

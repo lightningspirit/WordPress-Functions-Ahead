@@ -249,7 +249,7 @@ final class WP_Form {
 		// If any description is set, format it
 		$description = '';
 		if ( $field->get_attr( 'description' ) )
-			$description = '<p class="description">' . str_replace( 'p', '<br>', $field->get_attr( 'description' ) ) . '</p>';
+			$description = '<p class="description">' . $field->get_attr( 'description' ) . '</p>';
 
 		// If any index set, add tabindex attr
 		if ( !empty( $index ) && is_numeric( $index ) )
@@ -280,7 +280,7 @@ final class WP_Form {
 		// If any description is set, format it
 		$description = '';
 		if ( $field->get_attr( 'description' ) )
-			$description = '<p class="description">' . str_replace( 'p', '<br>', $field->get_attr( 'description' ) ) . '</p>';
+			$description = '<p class="description">' . $field->get_attr( 'description' ) . '</p>';
 
 		// If any index set, add tabindex attr
 		if ( !empty( $index ) && is_numeric( $index ) )
@@ -311,7 +311,7 @@ final class WP_Form {
 		// If any description is set, format it
 		$description = '';
 		if ( $field->get_attr( 'description' ) )
-			$description = '<p class="description">' . str_replace( 'p', '<br>', $field->get_attr( 'description' ) ) . '</p>';
+			$description = '<p class="description">' . $field->get_attr( 'description' ) . '</p>';
 
 		// If any index set, add tabindex attr
 		if ( !empty( $index ) && is_numeric( $index ) )
@@ -320,7 +320,7 @@ final class WP_Form {
 		// Get options and format HTML
 		$options_html = '';
 		foreach ( $field->get_options() as $value => $label ) {
-			$options_html .= "\n\t".'<option value="'.$option.'"'.selected( $value, $field->get_value(), false ).'>'.esc_html( $label ).'</option>';
+			$options_html .= "\n\t".'<option value="'.$value.'"'.selected( $value, $field->get_value(), false ).'>'.esc_html( $label ).'</option>';
 
 		}
 
@@ -350,7 +350,7 @@ final class WP_Form {
 		// If any description is set, format it
 		$description = '';
 		if ( $field->get_attr( 'description' ) )
-			$description = '<p class="description">' . str_replace( 'p', '<br>', $field->get_attr( 'description' ) ) . '</p>';
+			$description = '<p class="description">' . $field->get_attr( 'description' ) . '</p>';
 
 		// Format the HTML of the input and parse every variable to it
 		$html = sprintf( '<span id="%1$s" %2$s %3$s>%4$s</span> %5$s', 
@@ -376,12 +376,12 @@ final class WP_Form {
 		// If any description is set, format it
 		$description = '';
 		if ( $field->get_attr( 'description' ) )
-			$description = '<p class="description">' . str_replace( 'p', '<br>', $field->get_attr( 'description' ) ) . '</p>';
+			$description = '<p class="description">' . $field->get_attr( 'description' ) . '</p>';
 
 		$this->fields[] = (object) array(
 			'type' => $field->get_attr( 'type' ),
 			'label' => $this->_get_label( $field->get_attr( 'id' ), $field->get_attr( 'label' ) ),
-			'html'=> apply_filters( 'wp_form_render_html', $field->html, $field ),
+			'html'=> apply_filters( 'wp_form_render_html', $field->get_attr( 'html' ), $field ),
 			'object' => $field,
 		);
 
@@ -418,7 +418,7 @@ final class WP_Form {
 		// If any description is set, format it
 		$description = '';
 		if ( $field->get_attr( 'description' ) )
-			$description = '<p class="description">' . str_replace( 'p', '<br>', $field->get_attr( 'description' ) ) . '</p>';
+			$description = '<p class="description">' . $field->get_attr( 'description' ) . '</p>';
 
 		// Format the HTML of the input and parse every variable to it
 		$html = sprintf( '<div id="%1$s" value="%2$s" %3$s %4$s></div> %5$s', 
@@ -636,7 +636,7 @@ final class WP_Form {
 	 * @since 3.6
 	 */
 	public function add_field_time( $field, $index = '' ) {
-		$field->set_attr( 'class', sprintf( 'code date %s', $field->get_attr( 'class' ) ) );
+		$field->set_attr( 'class', sprintf( 'code time %s', $field->get_attr( 'class' ) ) );
 		
 		if ( !( $field->get_data( 'hourMin' ) ) )
 			$field->set_data( 'hourMin', '0' );
@@ -694,7 +694,7 @@ final class WP_Form {
 		// If any description is set, format it
 		$description = '';
 		if ( $field->get_attr( 'description' ) )
-			$description = '<p class="description">' . str_replace( 'p', '<br>', $field->get_attr( 'description' ) ) . '</p>';
+			$description = '<p class="description">' . $field->get_attr( 'description' ) . '</p>';
 
 		// If any index set, add tabindex attr
 		if ( !empty( $index ) && is_numeric( $index ) )
@@ -717,7 +717,7 @@ final class WP_Form {
 		// If any description is set, format it
 		$description = '';
 		if ( $field->get_attr( 'description' ) )
-			$description = '<p class="description">' . str_replace( 'p', '<br>', $field->get_attr( 'description' ) ) . '</p>';
+			$description = '<p class="description">' . $field->get_attr( 'description' ) . '</p>';
 
 		// If any index set, add tabindex attr
 		if ( !empty( $index ) && is_numeric( $index ) )
@@ -750,7 +750,7 @@ final class WP_Form {
 		// If any description is set, format it
 		$description = '';
 		if ( $field->get_attr( 'description' ) )
-			$description = '<p class="description">' . str_replace( 'p', '<br>', $field->get_attr( 'description' ) ) . '</p>';
+			$description = '<p class="description">' . $field->get_attr( 'description' ) . '</p>';
 
 		// If any index set, add tabindex attr
 		if ( !empty( $index ) && is_numeric( $index ) )
@@ -783,7 +783,7 @@ final class WP_Form {
 		// If any description is set, format it
 		$description = '';
 		if ( $field->get_attr( 'description' ) )
-			$description = '<p class="description">' . str_replace( 'p', '<br>', $field->get_attr( 'description' ) ) . '</p>';
+			$description = '<p class="description">' . $field->get_attr( 'description' ) . '</p>';
 
 		// Get options and format HTML
 		$html = sprintf( '<ul class="sortable" %1$s>', $field->get_data( 'html' ) );
@@ -813,7 +813,7 @@ final class WP_Form {
 		// If any description is set, format it
 		$description = '';
 		if ( $field->get_attr( 'description' ) )
-			$description = '<p class="description">' . str_replace( 'p', '<br>', $field->get_attr( 'description' ) ) . '</p>';
+			$description = '<p class="description">' . $field->get_attr( 'description' ) . '</p>';
 
 		// Get options and format HTML
 		$html = sprintf( '<ol class="selectable">', $field->get_data( 'html' ) );
@@ -848,7 +848,7 @@ final class WP_Form {
 		// If any description is set, format it
 		$description = '';
 		if ( $field->get_attr( 'description' ) )
-			$description = '<p class="description">' . str_replace( 'p', '<br>', $field->get_attr( 'description' ) ) . '</p>';
+			$description = '<p class="description">' . $field->get_attr( 'description' ) . '</p>';
 				
 		$this->fields[] = (object) array(
 			'type'  => $field->type,
@@ -880,7 +880,7 @@ final class WP_Form {
 		// If any description is set, format it
 		$description = '';
 		if ( $field->get_attr( 'description' ) )
-			$description = '<p class="description">' . str_replace( 'p', '<br>', $field->get_attr( 'description' ) ) . '</p>';
+			$description = '<p class="description">' . $field->get_attr( 'description' ) . '</p>';
 				
 		$this->fields[] = (object) array(
 			'type'  => $field->type,
@@ -960,7 +960,7 @@ final class WP_Form {
 		// If any description is set, format it
 		$description = '';
 		if ( $field->get_attr( 'description' ) )
-			$description = '<p class="description">' . str_replace( 'p', '<br>', $field->get_attr( 'description' ) ) . '</p>';
+			$description = '<p class="description">' . $field->get_attr( 'description' ) . '</p>';
 
 		// Format the HTML of the input and parse every variable to it
 		$html = sprintf( '<span id="%1$s" %2$s %3$s>%4$s</span> %5$s', 
@@ -1067,7 +1067,7 @@ final class WP_Form {
 		// If any description is set, format it
 		$description = '';
 		if ( $field->get_attr( 'description' ) )
-			$description = '<p class="description">' . str_replace( 'p', '<br>', $field->get_attr( 'description' ) ) . '</p>';
+			$description = '<p class="description">' . $field->get_attr( 'description' ) . '</p>';
 
 		// Format the HTML of the input and parse every variable to it
 		$html = sprintf( '<iframe id="%1$s" src="%2$s" %3$s %4$s></iframe> %5$s', 
@@ -1139,6 +1139,11 @@ final class WP_Form_Field {
 	private $data;
 
 	/**
+	 * @var $description
+	 */
+	private $description;
+
+	/**
 	 * @since 3.6
 	 */
 	public function __construct() {
@@ -1167,6 +1172,9 @@ final class WP_Form_Field {
 
 		elseif ( 'label' == strtolower( $attr ) )
 			return $this->label;
+
+		elseif ( 'description' == strtolower( $attr ) )
+			return $this->description;
 
 		elseif ( isset( $this->attributes[ strtolower( $attr ) ] ) )
 			return isset( $this->attributes[ strtolower( $attr ) ] );
@@ -1232,6 +1240,9 @@ final class WP_Form_Field {
 
 		elseif ( 'data' == strtolower( $attr ) )
 			$this->set_data( $value );
+
+		elseif ( 'description' == strtolower( $attr ) )
+			$this->description = esc_html( $value );
 
 		else
 			return $this->attributes[ strtolower( $attr ) ] = esc_attr( $value );
