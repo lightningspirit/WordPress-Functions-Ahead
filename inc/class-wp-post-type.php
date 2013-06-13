@@ -188,6 +188,9 @@ final class WP_Post_Type {
 			return $vars;
 
 		$post_type_object = get_post_type_object( $this->post_type );
+
+		if ( !isset( $post_type_object->sortable_columns ) )
+			return $vars;
 	
 		$sortable = $post_type_object->sortable_columns;
 		$order_by = $vars['orderby'];
