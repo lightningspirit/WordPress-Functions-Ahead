@@ -94,7 +94,7 @@ final class WP_Form {
 				'display', 'yesorno', 'custom', 'progressbar',
 
 				// Supported input format types
-				'hidden', 'text', 'number', 'email', 'url', 'color', 'name', 'code',
+				'hidden', 'text', 'password', 'number', 'email', 'url', 'color', 'name', 'code',
 				'date', 'datetime', 'time', 'currency',
 
 				// Connected to Google Maps API or other API
@@ -456,6 +456,24 @@ final class WP_Form {
 	 * @since 3.6
 	 */
 	public function add_field_text( $field, $index = '' ) {
+			
+		$field->set_attr( 'class', sprintf( 'regular-text %s', $field->get_attr( 'class' ) ) );
+		
+		if ( ! $field->get_attr( 'maxlength' ) )
+			$field->set_attr( 'maxlength', '80' );
+
+		if ( ! $field->get_attr( 'size' ) )
+			$field->set_attr( 'size', '80' );
+		
+		$this->add_field_input( $field, $index );
+
+	}
+
+	/**
+	 * 
+	 * @since 3.6
+	 */
+	public function add_field_password( $field, $index = '' ) {
 			
 		$field->set_attr( 'class', sprintf( 'regular-text %s', $field->get_attr( 'class' ) ) );
 		
