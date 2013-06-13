@@ -500,3 +500,33 @@ function is_browser( $browser ) {
 
 }
 endif;
+
+
+
+
+if ( ! function_exists( 'array_key_swap' ) ) :
+/**
+ * Swap keys inside an array
+ * 
+ * @since 3.6
+ * 
+ * @param string|array $param You can set the name or pass an args array
+ * @param string $condition 'and' or 'or'
+ * @return bool
+ */
+function array_key_swap( $array, $old_key, $new_key ) {
+
+	if ( ! array_key_exists( $old_key, $array ) ) {
+		trigger_error( 'Key not found in array', E_USER_WARNING );
+		return $array;
+
+	}
+	
+	$keys = array_keys( $array );
+	$pos  = array_search( $old_key, $array );
+	$keys[ $pos ] = $new_key;
+
+	return array_combine( $keys, array_values( $array ) );
+
+}
+endif;

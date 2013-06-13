@@ -1280,7 +1280,7 @@ final class WP_Form_Field {
 			$this->description = esc_html( $value );
 
 		else
-			return $this->attributes[ strtolower( $attr ) ] = esc_attr( $value );
+			return $this->attributes[ strtolower( $attr ) ] = ( is_array( $value ) ? array_map( 'esc_attr', $value ) : esc_attr( $value ) );
 
 	}
 

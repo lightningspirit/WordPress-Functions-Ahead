@@ -385,7 +385,7 @@ class Book {
 	public static function admin_head_edit() {
 		global $post_type;
 		
-		if ( ! in_array( 'book', array( $post_type, $_GET['post_type'] ) ) )
+		if ( ! in_array( 'book', array( $post_type, isset( $_GET['post_type'] ) ? $_GET['post_type'] : '' ) ) )
 			return;
 		
 		?>

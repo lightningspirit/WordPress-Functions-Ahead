@@ -37,15 +37,11 @@ add_action( 'switch_blog', '_wp_db_fix' );
  *
  */
 function _wp_initial_post_stuff() {
-	global $wp_post_types;
+	global $wp_post_types, $wp_post_types_ui;
 
 	/* Support and init WP_Post_Type instance */
-	$post_types = (array) apply_filters( '_wp_post_types', get_post_types( array( 'show_ui' => true ), 'objects' ) );
+	$wp_post_types_ui = new WP_Post_Type_UI();
 
-	foreach ( $post_types as $post_type => $object ) {
-		$wp_post_types[ $post_type ]->wp_post_type = new WP_Post_Type( $post_type, $object );
-
-	}
 
 	/* New post status Archived */
 	

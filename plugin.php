@@ -86,7 +86,7 @@ function _wp_register_functions_files() {
 	
 	//include( WP_FUNCTIONS_AHEAD_INC . 'class-wp-bread-crumb-trail.php' );
 	include( WP_FUNCTIONS_AHEAD_INC . 'class-wp-form.php' );
-	include( WP_FUNCTIONS_AHEAD_INC . 'class-wp-post-type.php' );
+	include( WP_FUNCTIONS_AHEAD_INC . 'class-wp-post-type-ui.php' );
 	include( WP_FUNCTIONS_AHEAD_INC . 'template-tags.php' );
 	
 	if ( is_admin() ) {
