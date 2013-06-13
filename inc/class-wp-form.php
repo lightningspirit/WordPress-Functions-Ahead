@@ -1212,7 +1212,7 @@ final class WP_Form_Field {
 			return $this->description;
 
 		elseif ( isset( $this->attributes[ strtolower( $attr ) ] ) )
-			return isset( $this->attributes[ strtolower( $attr ) ] );
+			return $this->attributes[ strtolower( $attr ) ];
 
 		else 
 			return '';
