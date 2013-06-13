@@ -854,7 +854,7 @@ final class WP_Form {
 		if ( $field->get_attr( 'params' ) )
 			$params = $field->get_attr( 'params' );
 
-		wp_editor( $field->get_value(), $field->get_attr( 'id' ), $params );
+		wp_editor( $field->get_value(), $field->get_attr( 'id' ) );
 
 		// If any description is set, format it
 		$description = '';
