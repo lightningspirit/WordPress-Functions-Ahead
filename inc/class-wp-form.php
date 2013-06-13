@@ -288,7 +288,7 @@ final class WP_Form {
 
 		// Set defaults
 		if ( !$field->get_attr( 'rows' ) )
-			$field->set_attr( 'rows', 2 );
+			$field->set_attr( 'rows', 3 );
 
 		if ( !$field->get_attr( 'cols' ) )
 			$field->set_attr( 'cols', 40 );
@@ -850,7 +850,7 @@ final class WP_Form {
 		ob_start();
 
 		// Get the HTML
-		wp_editor( $field->value, $field->id, isset( $field->params ) ? $field->params : null );
+		wp_editor( $field->get_value(), $field->get_attr( 'id' ), $field->get_attr( 'params' ) );
 
 		// If any description is set, format it
 		$description = '';
