@@ -286,6 +286,13 @@ final class WP_Form {
 		if ( !empty( $index ) && is_numeric( $index ) )
 			$field->set_attr( 'tabindex', $index );
 
+		// Set defaults
+		if ( !$field->get_attr( 'rows' ) )
+			$field->set_attr( 'rows', 2 );
+
+		if ( !$field->get_attr( 'cols' ) )
+			$field->set_attr( 'cols', 40 );
+
 		// Format the HTML of the input and parse every variable to it
 		$html = sprintf( '<textarea id="%1$s" name="%2$s" %3$s %4$s>%5$s</textarea> %6$s', 
 			$field->get_attr( 'id' ), $field->get_attr( 'name' ), wp_parse_attrs( $field->get_attributes() ), 
