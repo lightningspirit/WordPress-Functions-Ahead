@@ -885,7 +885,7 @@ final class WP_Form {
 		ob_start();
 
 		// Set params
-		$field->set_attr( 'params', array_merge( array( 'teeny' => true ), $field->get_attr( 'params' ) ) );
+		$field->set_attr( 'params', array_merge( array( 'teeny' => true ), (array) $field->get_attr( 'params' ) ) );
 		
 
 		// Get the HTML
