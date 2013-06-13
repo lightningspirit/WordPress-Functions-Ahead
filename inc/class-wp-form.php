@@ -1032,7 +1032,7 @@ final class WP_Form {
 
 		$field->set_options( $options );
 		
-		if ( true == $field->attr( 'multiple' ) )
+		if ( true == $field->get_attr( 'multiple' ) )
 			$this->add_field_multiplebox( $field, $index );		
 		else
 			$this->add_field_select( $field, $index );
