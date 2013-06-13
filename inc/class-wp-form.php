@@ -850,7 +850,11 @@ final class WP_Form {
 		ob_start();
 
 		// Get the HTML
-		wp_editor( $field->get_value(), $field->get_attr( 'id' ), $field->get_attr( 'params' ) );
+		$params = null;
+		if ( $field->get_attr( 'params' ) )
+			$params = $field->get_attr( 'params' );
+
+		wp_editor( $field->get_value(), $field->get_attr( 'id' ), $params );
 
 		// If any description is set, format it
 		$description = '';
