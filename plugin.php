@@ -152,7 +152,7 @@ function _wp_setup_blog() {
 			meta_key varchar(255) default NULL,
 			meta_value longtext,
 			PRIMARY KEY	(meta_id),
-			KEY term_taxonomy_id (taxonomy_id),
+			KEY term_taxonomy_id (term_taxonomy_id),
 			KEY meta_key (meta_key)
 		) $charset_collate;");
 
