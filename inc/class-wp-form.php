@@ -856,12 +856,15 @@ final class WP_Form {
 		$description = '';
 		if ( $field->get_attr( 'description' ) )
 			$description = '<p class="description">' . $field->get_attr( 'description' ) . '</p>';
+
+		// Build HTML
+		$html = sprintf( '<div class="wp-editor-%1$s" %2$s>%3$s</div> %4$s', $field->get_attr( 'id' ), $field->get_data( 'html' ), 
+				ob_get_contents(), $description );
 				
 		$this->fields[] = (object) array(
-			'type'  => $field->type,
-			'label' => $this->_get_label( $field->id, $field->label ),
-			'field' => sprintf( '<div class="wp-editor-%1$s" %2$s>%3$s</div> %4$s', $field->id, $field->get_data( 'html' ), 
-				ob_get_contents(), $field->description ),
+			'type' => $field->get_attr( 'type' ),
+			'label' => $this->_get_label( $field->get_attr( 'id' ), $field->get_attr( 'label' ) ),
+			'html'=> apply_filters( 'wp_form_render_html', $html, $field ),
 			'object' => $field
 		);
 
@@ -888,12 +891,15 @@ final class WP_Form {
 		$description = '';
 		if ( $field->get_attr( 'description' ) )
 			$description = '<p class="description">' . $field->get_attr( 'description' ) . '</p>';
+
+		// Build HTML
+		$html = sprintf( '<div class="wp-editor-%1$s" %2$s>%3$s</div> %4$s', $field->get_attr( 'id' ), $field->get_data( 'html' ), 
+				ob_get_contents(), $description );
 				
 		$this->fields[] = (object) array(
-			'type'  => $field->type,
-			'label' => $this->_get_label( $field->id, $field->label ),
-			'field' => sprintf( '<div class="wp-editor-%1$s" %2$s>%3$s</div> %4$s', $field->id, $field->get_data( 'html' ), 
-				ob_get_contents(), $field->description ),
+			'type' => $field->get_attr( 'type' ),
+			'label' => $this->_get_label( $field->get_attr( 'id' ), $field->get_attr( 'label' ) ),
+			'html'=> apply_filters( 'wp_form_render_html', $html, $field ),
 			'object' => $field
 		);
 
