@@ -453,3 +453,48 @@ function the_pagination( $args = '' ) {
 }
 endif;
 
+
+
+
+if ( ! function_exists( 'wp_form_table' ) ) :
+/**
+ * Create a form table given an array of fields
+ * 
+ * @since 3.6
+ * 
+ * @param array $fields Array of organized fields for WP_Form
+ * @param bool $echo. Default is true.
+ * @return bool|WP_Error
+ */
+function wp_form_table( $fields, $echo = true ) {
+
+	if ( ! is_array( $fields ) )
+		return new WP_Error( 'no_fields', __( 'No fields defined.', '_wp' ) );
+	
+	
+	$form = new WP_Form();
+	$form->add_fields( $fields );
+	
+	
+	$html = "\n<table class=\"form-table\">\n\t<tbody>";
+
+	foreach ( (array) $form->get_fields_array() as $field ) {
+		if ( 'hidden' == $field->type )
+			$html .= $field->html;
+
+		else
+			$html .= sprintf( 
+				"\n\t\t<tr valign=\"top\">\n\t\t\t<th scope=\"row\">{$field->label}</th>\n\t\t\t<td>{$field->html}</td>\n\t\t</tr>" 
+			);
+
+	}
+
+	$html .= "\n\t</tbody>\n</table>\n";
+
+	if ( $echo )
+		echo $html;
+
+	return $html;
+	
+}
+endif;
