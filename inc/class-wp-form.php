@@ -864,15 +864,14 @@ final class WP_Form {
 	 * @since 3.6
 	 */
 	public function add_field_editor( $field = '' ) {
-				
-		ob_start();
 
 		// Get the HTML
 		$params = null;
 		if ( $field->get_attr( 'params' ) )
 			$params = $field->get_attr( 'params' );
 
-		wp_editor( $field->get_value(), $field->get_attr( 'id' ) );
+		ob_start();
+		wp_editor( $field->get_value(), $field->get_attr( 'id' ), $params );
 
 		// If any description is set, format it
 		$description = '';
